@@ -3,14 +3,15 @@
 namespace Wsmallnews\Preference;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Wsmallnews\Preference\Models\Preference as PreferenceModel;
 
 class Preference
 {
     protected $preferencer;
+
     protected $type;
+
     protected $scope;
 
     public function __construct($preferencer)
@@ -26,12 +27,14 @@ class Preference
     public function type(string $type)
     {
         $this->type = $type;
+
         return $this;
     }
 
     public function scope($scope)
     {
         $this->scope = $scope;
+
         return $this;
     }
 
@@ -49,6 +52,7 @@ class Preference
         $existing = $query->first();
         if ($existing) {
             $existing->delete();
+
             return false;
         }
 
@@ -77,10 +81,10 @@ class Preference
 
         if ($target) {
             $query->where('preferenceable_type', get_class($target))
-                  ->where('preferenceable_id', $target->id);
+                ->where('preferenceable_id', $target->id);
         } else {
             $query->where('preferencer_type', get_class($this->preferencer))
-                  ->where('preferencer_id', $this->preferencer->id);
+                ->where('preferencer_id', $this->preferencer->id);
         }
 
         if ($this->scope) {
@@ -164,7 +168,7 @@ class Preference
     {
         if (is_object($this->scope)) {
             return $query->where('scope_type', get_class($this->scope))
-                        ->where('scope_id', $this->scope->id);
+                ->where('scope_id', $this->scope->id);
         }
 
         return $query->where('scope_id', $this->scope);
@@ -172,7 +176,8 @@ class Preference
 
     protected function getCacheKey(string $type, $target)
     {
-        $key = sprintf('preference:%s:%s:%d:%s:%d',
+        $key = sprintf(
+            'preference:%s:%s:%d:%s:%d',
             $type,
             get_class($this->preferencer),
             $this->preferencer->id,
@@ -194,13 +199,15 @@ class Preference
     protected function getCountCacheKey(string $type, $target = null)
     {
         if ($target) {
-            $key = sprintf('preference:count:%s:%s:%d',
+            $key = sprintf(
+                'preference:count:%s:%s:%d',
                 $type,
                 get_class($target),
                 $target->id
             );
         } else {
-            $key = sprintf('preference:count:%s:%s:%d',
+            $key = sprintf(
+                'preference:count:%s:%s:%d',
                 $type,
                 get_class($this->preferencer),
                 $this->preferencer->id
@@ -221,6 +228,7 @@ class Preference
     public function clearCache()
     {
         Cache::flush();
+
         return $this;
     }
 
@@ -234,17 +242,21 @@ class Preference
         // 处理 unlike, unfollow, unsubscribe 等方法
         if (preg_match('/^(unlike|unfollow|unsubscribe|unfavorite)$/', $method) && count($parameters) === 1) {
             $type = substr($method, 2); // 移除 'un' 前缀
+
             return $this->remove($type, $parameters[0]);
         }
 
         // 处理 hasLiked, hasFollowed, hasSubscribed 等方法
         if (preg_match('/^has([A-Z][a-z]+)$/', $method, $matches) && count($parameters) === 1) {
             $type = lcfirst($matches[1]); // 转换为小写开头
+
             return $this->exists($type, $parameters[0]);
         }
 
         throw new \BadMethodCallException(sprintf(
-            'Method %s::%s does not exist.', static::class, $method
+            'Method %s::%s does not exist.',
+            static::class,
+            $method
         ));
     }
 }

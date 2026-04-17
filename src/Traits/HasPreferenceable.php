@@ -80,7 +80,7 @@ trait HasPreferenceable
     {
         return $query->whereHas('preferences', function (Builder $q) use ($preferencer) {
             $q->where('preferencer_type', get_class($preferencer))
-              ->where('preferencer_id', $preferencer->id);
+                ->where('preferencer_id', $preferencer->id);
         });
     }
 }

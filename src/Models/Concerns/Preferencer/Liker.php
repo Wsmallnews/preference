@@ -3,6 +3,7 @@
 namespace Wsmallnews\Preference\Models\Concerns\Preferencer;
 
 use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -10,8 +11,8 @@ use Illuminate\Pagination\AbstractCursorPaginator;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
-use Wsmallnews\Preference\Models\Preference;
 use Wsmallnews\Preference\Models\Concerns\Preferenceable\Likeable;
+use Wsmallnews\Preference\Models\Preference;
 
 trait Liker
 {
@@ -46,12 +47,11 @@ trait Liker
     {
         $preference = $this->likes()->preferenceable()->associate($preferenceable)->first();
 
-        if (!$preference) {
+        if (! $preference) {
             return $preference->delete();
         }
 
         return true;
-
 
         /* @var \Overtrue\LaravelLike\Like $relation */
         $relation = \app(config('like.like_model'))
@@ -103,7 +103,7 @@ trait Liker
     /**
      * Get Query Builder for likes
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     // public function getLikedItems(string $model)
     // {

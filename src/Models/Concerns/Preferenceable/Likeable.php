@@ -12,8 +12,6 @@ trait Likeable
     {
         return $this->likes()->preferencer()->associate($preferencer)->exists();
 
-
-
         // if (\is_a($user, config('like.user_model') ?? config('auth.providers.users.model'))) {
         //     if ($this->relationLoaded('likers')) {
         //         return $this->likers->contains($user);
