@@ -146,7 +146,7 @@ class PreferenceServiceProvider extends PackageServiceProvider
     protected function getMigrations(): array
     {
         return [
-            'create_preference_table',
+            '2026_04_15_162434_create_sn_preferences_table',
         ];
     }
 }
