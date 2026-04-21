@@ -38,7 +38,6 @@ trait Liker
         return $preference;
     }
 
-
     public function unlike(Model $preferenceable): bool
     {
         $preference = $this->likes()
@@ -91,7 +90,6 @@ trait Liker
     //     );
     // }
 
-    
     public function attachLikeStatus(&$preferenceables, ?callable $resolver = null)
     {
         $likes = $this->likes()->get()->keyBy(function ($item) {

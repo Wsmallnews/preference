@@ -25,12 +25,12 @@ trait Likeable
     public function userLikers(): MorphToMany
     {
         return $this->morphToMany(
-                UserUtils::getUserModel(),           // 目标模型
-                'preferenceable',         // 多态关联名
-                app(PreferenceUtils::getPreferenceModel())->getTable(),            // 中间表名
-                'preferenceable_id',      // 中间表的外键（指向当前模型）
-                'preferencer_id'         // 中间表的另一个外键
-            )
+            UserUtils::getUserModel(),           // 目标模型
+            'preferenceable',         // 多态关联名
+            app(PreferenceUtils::getPreferenceModel())->getTable(),            // 中间表名
+            'preferenceable_id',      // 中间表的外键（指向当前模型）
+            'preferencer_id'         // 中间表的另一个外键
+        )
             ->wherePivot('preferencer_type', (new (UserUtils::getUserModel()))->getMorphClass())  // 过滤评论发布者类型
             ->wherePivot('type', '=', 'like')      // 过滤 preference 类类型
             ->withPivot('preferencer_type', 'options')         // 带上 preference 的其他信息
