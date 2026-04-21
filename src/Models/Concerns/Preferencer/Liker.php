@@ -3,7 +3,6 @@
 namespace Wsmallnews\Preference\Models\Concerns\Preferencer;
 
 use Illuminate\Contracts\Pagination\Paginator;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Pagination\AbstractCursorPaginator;
@@ -12,60 +11,43 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
 use Wsmallnews\Preference\Models\Preference;
 use Wsmallnews\Preference\Models\Concerns\Preferenceable\Likeable;
+use Wsmallnews\Preference\Support\Utils;
 
 trait Liker
 {
     public function like(Model $preferenceable): Preference
     {
-        return $this->likes()->withPreferenceable($preferenceable)->firstOrCreate();
+        $preference = $this->likes()
+            ->withPreferenceable($preferenceable)
+            ->snScope($preferenceable->getScopeType(), $preferenceable->getScopeId())
+            ->firstOr(function () use ($preferenceable) {
+                $attributes = [
+                    'team_id' => current_tenant()?->id,
+                    ...$preferenceable->getScopeable(),
+                    'type' => 'like',
+                ];
 
-        // $attributes = [
-        //     'likeable_type' => $object->getMorphClass(),
-        //     'likeable_id' => $object->getKey(),
-        //     config('like.user_foreign_key') => $this->getKey(),
-        // ];
+                $preference = new (Utils::getPreferenceModel());
+                $preference->preferenceable()->associate($preferenceable);
+                $preference->preferencer()->associate($this);
+                $preference->fill($attributes)->save();
 
-        // /* @var \Illuminate\Database\Eloquent\Model $like */
-        // $like = \app(config('like.like_model'));
+                return $preference;
+            });
 
-        // /* @var \Overtrue\LaravelLike\Traits\Likeable|\Illuminate\Database\Eloquent\Model $object */
-        // return $like->where($attributes)->firstOr(
-        //     function () use ($like, $attributes) {
-        //         return $like->unguarded(function () use ($like, $attributes) {
-        //             if ($this->relationLoaded('likes')) {
-        //                 $this->unsetRelation('likes');
-        //             }
-
-        //             return $like->create($attributes);
-        //         });
-        //     }
-        // );
+        return $preference;
     }
+
 
     public function unlike(Model $preferenceable): bool
     {
-        $preference = $this->likes()->preferenceable()->associate($preferenceable)->first();
-
-        if (!$preference) {
-            return $preference->delete();
-        }
-
-        return true;
-
-
-        /* @var \Overtrue\LaravelLike\Like $relation */
-        $relation = \app(config('like.like_model'))
-            ->where('likeable_id', $object->getKey())
-            ->where('likeable_type', $object->getMorphClass())
-            ->where(config('like.user_foreign_key'), $this->getKey())
+        $preference = $this->likes()
+            ->withPreferenceable($preferenceable)
+            ->snScope($preferenceable->getScopeType(), $preferenceable->getScopeId())
             ->first();
 
-        if ($relation) {
-            if ($this->relationLoaded('likes')) {
-                $this->unsetRelation('likes');
-            }
-
-            return $relation->delete();
+        if ($preference) {
+            return $preference->delete();
         }
 
         return true;
@@ -83,21 +65,15 @@ trait Liker
 
     public function hasLiked(Model $preferenceable): bool
     {
-        return $this->likes()->preferenceable()->associate($preferenceable)->count() > 0;
-
-        // if (!$preference) {
-        //     return false;
-        // }
-
-        // return ($this->relationLoaded('likes') ? $this->likes : $this->likes())
-        //     ->where('likeable_id', $object->getKey())
-        //     ->where('likeable_type', $object->getMorphClass())
-        //     ->count() > 0;
+        return $this->likes()
+            ->withPreferenceable($preferenceable)
+            ->snScope($preferenceable->getScopeType(), $preferenceable->getScopeId())
+            ->count() > 0;
     }
 
     public function likes(): MorphMany
     {
-        return $this->preferences()->withType('like');
+        return $this->preferences()->withAttributes(['type' => 'like']);        // withAttributes 如果通过likes 创建 preferences， type 会自动附加到 preferences 中
     }
 
     /**
@@ -115,39 +91,39 @@ trait Liker
     //     );
     // }
 
-    public function attachLikeStatus(&$likeables, ?callable $resolver = null)
+    public function attachLikeStatus(&$preferenceables, ?callable $resolver = null)
     {
         $likes = $this->likes()->get()->keyBy(function ($item) {
-            return \sprintf('%s:%s', $item->likeable_type, $item->likeable_id);
+            return \sprintf('%s:%s-%s:%s', $item->preferenceable_type, $item->preferenceable_id, $item->scope_type, $item->scope_id);
         });
 
-        $attachStatus = function ($likeable) use ($likes, $resolver) {
+        $attachStatus = function ($preferenceable) use ($likes, $resolver) {
             $resolver = $resolver ?? fn ($m) => $m;
-            $likeable = $resolver($likeable);
+            $preferenceable = $resolver($preferenceable);
 
-            if ($likeable && \in_array(Likeable::class, \class_uses_recursive($likeable))) {
-                $key = \sprintf('%s:%s', $likeable->getMorphClass(), $likeable->getKey());
-                $likeable->setAttribute('has_liked', $likes->has($key));
+            if ($preferenceable && \in_array(Likeable::class, \class_uses_recursive($preferenceable))) {
+                $key = \sprintf('%s:%s-%s:%s', $preferenceable->getMorphClass(), $preferenceable->getKey(), $preferenceable->getScopeType(), $preferenceable->getScopeId());
+                $preferenceable->setAttribute('has_liked', $likes->has($key));
             }
 
-            return $likeable;
+            return $preferenceable;
         };
 
         switch (true) {
-            case $likeables instanceof Model:
-                return $attachStatus($likeables);
-            case $likeables instanceof Collection:
-                return $likeables->each($attachStatus);
-            case $likeables instanceof LazyCollection:
-                return $likeables = $likeables->map($attachStatus);
-            case $likeables instanceof AbstractPaginator:
-            case $likeables instanceof AbstractCursorPaginator:
-                return $likeables->through($attachStatus);
-            case $likeables instanceof Paginator:
+            case $preferenceables instanceof Model:
+                return $attachStatus($preferenceables);
+            case $preferenceables instanceof Collection:
+                return $preferenceables->each($attachStatus);
+            case $preferenceables instanceof LazyCollection:
+                return $preferenceables = $preferenceables->map($attachStatus);
+            case $preferenceables instanceof AbstractPaginator:
+            case $preferenceables instanceof AbstractCursorPaginator:
+                return $preferenceables->through($attachStatus);
+            case $preferenceables instanceof Paginator:
                 // custom paginator will return a collection
-                return collect($likeables->items())->transform($attachStatus);
-            case \is_array($likeables):
-                return \collect($likeables)->transform($attachStatus);
+                return collect($preferenceables->items())->transform($attachStatus);
+            case \is_array($preferenceables):
+                return \collect($preferenceables)->transform($attachStatus);
             default:
                 throw new \InvalidArgumentException('Invalid argument type.');
         }

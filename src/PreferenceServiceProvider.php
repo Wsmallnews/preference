@@ -9,28 +9,27 @@ use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Livewire\Features\SupportTesting\Testable;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Wsmallnews\Preference\Commands\PreferenceCommand;
-use Wsmallnews\Preference\Testing\TestsPreference;
+use Wsmallnews\Preference\Support\Utils;
 
 class PreferenceServiceProvider extends PackageServiceProvider
 {
-    public static string $name = 'preference';
+    public static string $name = 'sn-preference';
 
-    public static string $viewNamespace = 'preference';
+    public static string $viewNamespace = 'sn-preference';
 
     public function configurePackage(Package $package): void
     {
-        /*
-         * This class is a Package Service Provider
-         *
-         * More info: https://github.com/spatie/laravel-package-tools
-         */
         $package->name(static::$name)
             ->hasCommands($this->getCommands())
+            ->hasConfigFile()
+            ->hasTranslations()
+            ->hasViews(static::$viewNamespace)
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
                     ->publishConfigFile()
@@ -39,22 +38,9 @@ class PreferenceServiceProvider extends PackageServiceProvider
                     ->askToStarRepoOnGitHub('wsmallnews/preference');
             });
 
-        $configFileName = $package->shortName();
-
-        if (file_exists($package->basePath("/../config/{$configFileName}.php"))) {
-            $package->hasConfigFile();
-        }
-
         if (file_exists($package->basePath('/../database/migrations'))) {
             $package->hasMigrations($this->getMigrations());
-        }
-
-        if (file_exists($package->basePath('/../resources/lang'))) {
-            $package->hasTranslations();
-        }
-
-        if (file_exists($package->basePath('/../resources/views'))) {
-            $package->hasViews(static::$viewNamespace);
+            $package->runsMigrations();
         }
     }
 
@@ -62,6 +48,11 @@ class PreferenceServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
+        // 注册模型别名
+        Relation::enforceMorphMap([
+            'sn-preference' => Utils::getPreferenceModel(),
+        ]);
+
         // Asset Registration
         FilamentAsset::register(
             $this->getAssets(),
@@ -84,9 +75,6 @@ class PreferenceServiceProvider extends PackageServiceProvider
                 ], 'preference-stubs');
             }
         }
-
-        // Testing
-        Testable::mixin(new TestsPreference);
     }
 
     protected function getAssetPackageName(): ?string
