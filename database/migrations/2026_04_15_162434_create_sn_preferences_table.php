@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('scope_id')->default(0)->comment('范围');
 
             $table->string('type')->nullable()->comment('偏好类型:like=喜欢,view=浏览记录等');
-            
+
             $table->morphs('preferencer');      // 关联人
             $table->morphs('preferenceable');   // 关联模型
 

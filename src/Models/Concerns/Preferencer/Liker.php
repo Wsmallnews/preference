@@ -9,8 +9,8 @@ use Illuminate\Pagination\AbstractCursorPaginator;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
-use Wsmallnews\Preference\Models\Preference;
 use Wsmallnews\Preference\Models\Concerns\Preferenceable\Likeable;
+use Wsmallnews\Preference\Models\Preference;
 use Wsmallnews\Preference\Support\Utils;
 
 trait Liker
@@ -79,7 +79,7 @@ trait Liker
     /**
      * Get Query Builder for likes
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     // public function getLikedItems(string $model)
     // {
@@ -91,6 +91,7 @@ trait Liker
     //     );
     // }
 
+    
     public function attachLikeStatus(&$preferenceables, ?callable $resolver = null)
     {
         $likes = $this->likes()->get()->keyBy(function ($item) {
