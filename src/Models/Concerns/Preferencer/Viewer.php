@@ -15,12 +15,8 @@ use Wsmallnews\Preference\Support\Utils;
 
 trait Viewer
 {
-
     /**
      * 浏览 $preferenceable
-     *
-     * @param Model $preferenceable
-     * @return Preference
      */
     public function view(Model $preferenceable): Preference
     {
@@ -42,7 +38,7 @@ trait Viewer
                 return $preference;
             });
 
-        if (!$preference->wasRecentlyCreated) {
+        if (! $preference->wasRecentlyCreated) {
             // 如果已存在，手动更新 updated_at
             $preference->touch();
         }
@@ -55,9 +51,6 @@ trait Viewer
 
     /**
      * 是否浏览过 $preferenceable
-     *
-     * @param Model $preferenceable
-     * @return boolean
      */
     public function hasViewed(Model $preferenceable): bool
     {
@@ -67,7 +60,6 @@ trait Viewer
             ->count() > 0;
     }
 
-
     public function deleteView(Model $preferenceable)
     {
         return $this->views()
@@ -75,7 +67,6 @@ trait Viewer
             ->snScope($preferenceable->getScopeType(), $preferenceable->getScopeId())
             ->delete();
     }
-
 
     public function clearViews()
     {
@@ -86,22 +77,19 @@ trait Viewer
         //     ->delete();
     }
 
-
     /**
      * 为 $preferenceables 附加浏览状态
      *
-     * @param mixed $preferenceables
-     * @param callable|null $resolver
-     * @return mixed
+     * @param  mixed  $preferenceables
      */
-    public function attachViewStatus(&$preferenceables, ?callable $resolver = null) : mixed
+    public function attachViewStatus(&$preferenceables, ?callable $resolver = null): mixed
     {
         $views = $this->views()->get()->keyBy(function ($item) {
             return \sprintf('%s:%s-%s:%s', $item->preferenceable_type, $item->preferenceable_id, $item->scope_type, $item->scope_id);
         });
 
         $attachStatus = function ($preferenceable) use ($views, $resolver) {
-            $resolver = $resolver ?? fn($m) => $m;
+            $resolver = $resolver ?? fn ($m) => $m;
             $preferenceable = $resolver($preferenceable);
 
             if ($preferenceable && \in_array(Viewable::class, \class_uses_recursive($preferenceable))) {
@@ -132,11 +120,8 @@ trait Viewer
         }
     }
 
-
     /**
      * views 关联
-     *
-     * @return MorphMany
      */
     public function views(): MorphMany
     {
