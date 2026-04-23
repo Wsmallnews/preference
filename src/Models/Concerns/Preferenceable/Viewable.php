@@ -9,29 +9,28 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Wsmallnews\Preference\Support\Utils as PreferenceUtils;
 use Wsmallnews\User\Support\Utils as UserUtils;
 
-trait Likeable
+trait Viewable
 {
     /**
-     * 是否被 $preferencer 喜欢
+     * 是否被 $preferencer 浏览过
      *
      * @param Model $preferencer
-     * @return bool
+     * @return boolean
      */
-    public function isLikedBy(Model $preferencer): bool
+    public function isViewedBy(Model $preferencer): bool
     {
-        return $this->likes()
+        return $this->views()
             ->withPreferencer($preferencer)
             ->snScope($this->getScopeType(), $this->getScopeId())
             ->exists();
     }
 
-
     /**
-     * 返回 $this 被喜欢过的用户列表 仅 preferencer_type 仅 UserModel 类型
+     * 返回 $this 被浏览过的用户列表 仅 preferencer_type 仅 UserModel 类型
      * 
      * @return MorphToMany
      */
-    public function userLikers(): MorphToMany
+    public function userViewers(): MorphToMany
     {
         return $this->morphToMany(
             UserUtils::getUserModel(),           // 目标模型
@@ -41,26 +40,19 @@ trait Likeable
             'preferencer_id'         // 中间表的另一个外键
         )
             ->wherePivot('preferencer_type', (new (UserUtils::getUserModel()))->getMorphClass())  // 过滤评论发布者类型
-            ->wherePivot('type', '=', 'like')      // 过滤 preference 类类型
+            ->wherePivot('type', '=', 'view')      // 过滤 preference 类类型
             ->withPivot('preferencer_type', 'options')         // 带上 preference 的其他信息
             ->withTimestamps();               // 时间戳
     }
 
 
     /**
-     * likes 关联
+     * views 关联
      *
      * @return MorphMany
      */
-    public function likes(): MorphMany
+    public function views(): MorphMany
     {
-        return $this->preferences()->withType('like');
+        return $this->preferences()->withType('view');
     }
-
-    // protected function totalLikers(): Attribute
-    // {
-    //     return Attribute::get(function () {
-    //         return $this->likers()->count() ?? 0;
-    //     });
-    // }
 }

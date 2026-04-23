@@ -9,29 +9,29 @@ use Illuminate\Pagination\AbstractCursorPaginator;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
-use Wsmallnews\Preference\Models\Concerns\Preferenceable\Likeable;
+use Wsmallnews\Preference\Models\Concerns\Preferenceable\Viewable;
 use Wsmallnews\Preference\Models\Preference;
 use Wsmallnews\Preference\Support\Utils;
 
-trait Liker
+trait Viewer
 {
 
     /**
-     * 喜欢 $preferenceable
+     * 浏览 $preferenceable
      *
      * @param Model $preferenceable
      * @return Preference
      */
-    public function like(Model $preferenceable): Preference
+    public function view(Model $preferenceable): Preference
     {
-        $preference = $this->likes()
+        $preference = $this->views()
             ->withPreferenceable($preferenceable)
             ->snScope($preferenceable->getScopeType(), $preferenceable->getScopeId())
             ->firstOr(function () use ($preferenceable) {
                 $attributes = [
                     'team_id' => current_tenant()?->id,
                     ...$preferenceable->getScopeable(),
-                    'type' => 'like',
+                    'type' => 'view',
                 ];
 
                 $preference = new (Utils::getPreferenceModel());
@@ -42,98 +42,71 @@ trait Liker
                 return $preference;
             });
 
-        // 增加喜欢数量
-        $preferenceable->whereKey($preferenceable->getKey())->incrementJson('counter->like_num');
+        if (!$preference->wasRecentlyCreated) {
+            // 如果已存在，手动更新 updated_at
+            $preference->touch();
+        }
+
+        // 增加浏览数量
+        $preferenceable->whereKey($preferenceable->getKey())->incrementJson('counter->view_num');
 
         return $preference;
     }
 
     /**
-     * 取消喜欢 $preferenceable
+     * 是否浏览过 $preferenceable
      *
      * @param Model $preferenceable
-     * @return bool
+     * @return boolean
      */
-    public function unlike(Model $preferenceable): bool
+    public function hasViewed(Model $preferenceable): bool
     {
-        // 减少数量
-        $preferenceable->whereKey($preferenceable->getKey())->decrementJson('counter->like_num');
-
-        $preference = $this->likes()
-            ->withPreferenceable($preferenceable)
-            ->snScope($preferenceable->getScopeType(), $preferenceable->getScopeId())
-            ->first();
-
-        if ($preference) {
-            return $preference->delete();
-        }
-
-        return true;
-    }
-
-    
-    /**
-     * 切换喜欢状态
-     *
-     * @param Model $object
-     * @return Preference
-     */
-    public function toggleLike(Model $preferenceable)
-    {
-        return $this->hasLiked($preferenceable) ? $this->unlike($preferenceable) : $this->like($preferenceable);
-    }
-
-    /**
-     * 是否喜欢 $preferenceable
-     *
-     * @param Model $preferenceable
-     * @return bool
-     */
-    public function hasLiked(Model $preferenceable): bool
-    {
-        return $this->likes()
+        return $this->views()
             ->withPreferenceable($preferenceable)
             ->snScope($preferenceable->getScopeType(), $preferenceable->getScopeId())
             ->count() > 0;
     }
 
 
-    /**
-     * Get Query Builder for likes
-     *
-     * @return Builder
-     */
-    // public function getLikedItems(string $model)
-    // {
-    //     return app($model)->whereHas(
-    //         'likers',
-    //         function ($q) {
-    //             return $q->where(config('like.user_foreign_key'), $this->getKey());
-    //         }
-    //     );
-    // }
+    public function deleteView(Model $preferenceable)
+    {
+        return $this->views()
+            ->withPreferenceable($preferenceable)
+            ->snScope($preferenceable->getScopeType(), $preferenceable->getScopeId())
+            ->delete();
+    }
+
+
+    public function clearViews()
+    {
+        // @sn todo 这里待完善
+        // Preference::preference('view')
+        //     ->type($morph_name)
+        //     ->where('user_id', $this->{$this->getPk()})
+        //     ->delete();
+    }
 
 
     /**
-     * 为 $preferenceables 附加喜欢状态
+     * 为 $preferenceables 附加浏览状态
      *
      * @param mixed $preferenceables
      * @param callable|null $resolver
      * @return mixed
      */
-    public function attachLikeStatus(&$preferenceables, ?callable $resolver = null)
+    public function attachViewStatus(&$preferenceables, ?callable $resolver = null) : mixed
     {
-        $likes = $this->likes()->get()->keyBy(function ($item) {
+        $views = $this->views()->get()->keyBy(function ($item) {
             return \sprintf('%s:%s-%s:%s', $item->preferenceable_type, $item->preferenceable_id, $item->scope_type, $item->scope_id);
         });
 
-        $attachStatus = function ($preferenceable) use ($likes, $resolver) {
-            $resolver = $resolver ?? fn ($m) => $m;
+        $attachStatus = function ($preferenceable) use ($views, $resolver) {
+            $resolver = $resolver ?? fn($m) => $m;
             $preferenceable = $resolver($preferenceable);
 
-            if ($preferenceable && \in_array(Likeable::class, \class_uses_recursive($preferenceable))) {
+            if ($preferenceable && \in_array(Viewable::class, \class_uses_recursive($preferenceable))) {
                 $key = \sprintf('%s:%s-%s:%s', $preferenceable->getMorphClass(), $preferenceable->getKey(), $preferenceable->getScopeType(), $preferenceable->getScopeId());
-                $preferenceable->setAttribute('has_liked', $likes->has($key));
+                $preferenceable->setAttribute('has_viewed', $views->has($key));
             }
 
             return $preferenceable;
@@ -159,21 +132,14 @@ trait Liker
         }
     }
 
-    // protected function totalLikes(): Attribute
-    // {
-    //     return Attribute::make(get: function ($value) {
-    //         return $this->likes()->count() ?? 0;
-    //     });
-    // }
-
 
     /**
-     * likes 关联
+     * views 关联
      *
      * @return MorphMany
      */
-    public function likes(): MorphMany
+    public function views(): MorphMany
     {
-        return $this->preferences()->withAttributes(['type' => 'like']);        // withAttributes 如果通过likes 创建 preferences， type 会自动附加到 preferences 中
+        return $this->preferences()->withAttributes(['type' => 'view']);        // withAttributes 如果通过views 创建 preferences， type 会自动附加到 preferences 中
     }
 }
