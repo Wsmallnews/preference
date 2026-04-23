@@ -35,11 +35,17 @@ trait Liker
                 return $preference;
             });
 
+        // 增加喜欢数量
+        $preferenceable->whereKey($preferenceable->getKey())->incrementJson('counter->like_num');
+
         return $preference;
     }
 
     public function unlike(Model $preferenceable): bool
     {
+        // 减少数量
+        $preferenceable->whereKey($preferenceable->getKey())->decrementJson('counter->like_num');
+
         $preference = $this->likes()
             ->withPreferenceable($preferenceable)
             ->snScope($preferenceable->getScopeType(), $preferenceable->getScopeId())
