@@ -17,7 +17,7 @@ trait Viewer
 {
 
     /**
-     * 浏览 $preferenceable
+     * 浏览 $preferenceable，记录浏览记录 (必须有浏览人)
      *
      * @param Model $preferenceable
      * @return Preference
@@ -53,6 +53,7 @@ trait Viewer
         return $preference;
     }
 
+
     /**
      * 是否浏览过 $preferenceable
      *
@@ -68,6 +69,12 @@ trait Viewer
     }
 
 
+    /**
+     * 删除浏览记录
+     *
+     * @param Model $preferenceable
+     * @return void
+     */
     public function deleteView(Model $preferenceable)
     {
         return $this->views()
@@ -77,13 +84,33 @@ trait Viewer
     }
 
 
-    public function clearViews()
+    /**
+     * 清空所有浏览记录 （没限制 租户，没限制 scope）
+     *
+     * @param mixed $preferenceType
+     * @return void
+     */
+    public function clearAllViews($preferenceType)
     {
-        // @sn todo 这里待完善
-        // Preference::preference('view')
-        //     ->type($morph_name)
-        //     ->where('user_id', $this->{$this->getPk()})
-        //     ->delete();
+        return $this->views()
+            ->withPreferenceType($preferenceType)
+            ->delete();
+    }
+
+
+    /**
+     * 清空 scopeable 范围浏览记录 （没限制 租户）
+     *
+     * @param array $scopeable
+     * @param mixed $preferenceType
+     * @return void
+     */
+    public function clearScopeableViews(array $scopeable, $preferenceType)
+    {
+        return $this->views()
+            ->withPreferenceType($preferenceType)
+            ->scopeable($scopeable['scope_type'], $scopeable['scope_id'])
+            ->delete();
     }
 
 

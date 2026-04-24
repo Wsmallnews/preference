@@ -42,8 +42,10 @@ trait Liker
                 return $preference;
             });
 
-        // 增加喜欢数量
-        $preferenceable->whereKey($preferenceable->getKey())->incrementJson('counter->like_num');
+        if ($preference->wasRecentlyCreated) {
+            // 增加喜欢数量
+            $preferenceable->whereKey($preferenceable->getKey())->incrementJson('counter->like_num');
+        }
 
         return $preference;
     }
@@ -56,15 +58,15 @@ trait Liker
      */
     public function unlike(Model $preferenceable): bool
     {
-        // 减少数量
-        $preferenceable->whereKey($preferenceable->getKey())->decrementJson('counter->like_num');
-
         $preference = $this->likes()
             ->withPreferenceable($preferenceable)
             ->snScope($preferenceable->getScopeType(), $preferenceable->getScopeId())
             ->first();
 
         if ($preference) {
+            // 减少喜欢数量
+            $preferenceable->whereKey($preferenceable->getKey())->decrementJson('counter->like_num');
+            // 删除喜欢记录
             return $preference->delete();
         }
 
