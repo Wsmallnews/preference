@@ -17,9 +17,6 @@ trait Viewer
 {
     /**
      * 浏览 $preferenceable，记录浏览记录 (必须有浏览人)
-     *
-     * @param Model $preferenceable
-     * @return Preference
      */
     public function view(Model $preferenceable): Preference
     {
@@ -52,7 +49,6 @@ trait Viewer
         return $preference;
     }
 
-
     /**
      * 是否浏览过 $preferenceable
      */
@@ -64,11 +60,9 @@ trait Viewer
             ->count() > 0;
     }
 
-
     /**
      * 删除浏览记录
      *
-     * @param Model $preferenceable
      * @return void
      */
     public function deleteView(Model $preferenceable)
@@ -79,11 +73,10 @@ trait Viewer
             ->delete();
     }
 
-
     /**
      * 清空所有浏览记录 （没限制 租户，没限制 scope）
      *
-     * @param mixed $preferenceType
+     * @param  mixed  $preferenceType
      * @return void
      */
     public function clearAllViews($preferenceType)
@@ -93,12 +86,10 @@ trait Viewer
             ->delete();
     }
 
-
     /**
      * 清空 scopeable 范围浏览记录 （没限制 租户）
      *
-     * @param array $scopeable
-     * @param mixed $preferenceType
+     * @param  mixed  $preferenceType
      * @return void
      */
     public function clearScopeableViews(array $scopeable, $preferenceType)
@@ -113,8 +104,6 @@ trait Viewer
      * 为 $preferenceables 附加浏览状态
      *
      * @param  mixed  $preferenceables
-     * @param  ?callable $resolver
-     * @return mixed
      */
     public function attachViewStatus(&$preferenceables, ?callable $resolver = null): mixed
     {
@@ -156,8 +145,6 @@ trait Viewer
 
     /**
      * views 关联
-     * 
-     * @return MorphMany
      */
     public function views(): MorphMany
     {

@@ -59,6 +59,7 @@ trait Liker
         if ($preference) {
             // 减少喜欢数量
             $preferenceable->whereKey($preferenceable->getKey())->decrementJson('counter->like_num');
+
             // 删除喜欢记录
             return $preference->delete();
         }

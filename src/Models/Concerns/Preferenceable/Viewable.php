@@ -11,12 +11,8 @@ use Wsmallnews\User\Support\Utils as UserUtils;
 
 trait Viewable
 {
-
     /**
      * preferencer 浏览 $当前主体，记录浏览记录 (如果没有浏览人则不记录，只增加浏览量)
-     *
-     * @param Model $preferencer
-     * @return ?Preference
      */
     public function view(?Model $preferencer = null): ?Preference
     {
@@ -40,7 +36,7 @@ trait Viewable
                     return $preference;
                 });
 
-            if (!$preference->wasRecentlyCreated) {
+            if (! $preference->wasRecentlyCreated) {
                 // 如果已存在，手动更新 updated_at
                 $preference->touch();
             }
@@ -51,7 +47,6 @@ trait Viewable
 
         return $preference ?? null;
     }
-
 
     /**
      * 是否被 $preferencer 浏览过
