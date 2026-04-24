@@ -13,9 +13,6 @@ trait Likeable
 {
     /**
      * 是否被 $preferencer 喜欢
-     *
-     * @param Model $preferencer
-     * @return bool
      */
     public function isLikedBy(Model $preferencer): bool
     {
@@ -25,11 +22,8 @@ trait Likeable
             ->exists();
     }
 
-
     /**
      * 返回 $this 被喜欢过的用户列表 仅 preferencer_type 仅 UserModel 类型
-     * 
-     * @return MorphToMany
      */
     public function userLikers(): MorphToMany
     {
@@ -46,11 +40,8 @@ trait Likeable
             ->withTimestamps();               // 时间戳
     }
 
-
     /**
      * likes 关联
-     *
-     * @return MorphMany
      */
     public function likes(): MorphMany
     {

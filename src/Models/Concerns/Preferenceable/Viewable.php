@@ -2,7 +2,6 @@
 
 namespace Wsmallnews\Preference\Models\Concerns\Preferenceable;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -56,9 +55,6 @@ trait Viewable
 
     /**
      * 是否被 $preferencer 浏览过
-     *
-     * @param Model $preferencer
-     * @return boolean
      */
     public function isViewedBy(Model $preferencer): bool
     {
@@ -70,8 +66,6 @@ trait Viewable
 
     /**
      * 返回 $this 被浏览过的用户列表 仅 preferencer_type 仅 UserModel 类型
-     * 
-     * @return MorphToMany
      */
     public function userViewers(): MorphToMany
     {
@@ -88,11 +82,8 @@ trait Viewable
             ->withTimestamps();               // 时间戳
     }
 
-
     /**
      * views 关联
-     *
-     * @return MorphMany
      */
     public function views(): MorphMany
     {

@@ -15,7 +15,6 @@ use Wsmallnews\Preference\Support\Utils;
 
 trait Viewer
 {
-
     /**
      * 浏览 $preferenceable，记录浏览记录 (必须有浏览人)
      *
@@ -42,7 +41,7 @@ trait Viewer
                 return $preference;
             });
 
-        if (!$preference->wasRecentlyCreated) {
+        if (! $preference->wasRecentlyCreated) {
             // 如果已存在，手动更新 updated_at
             $preference->touch();
         }
@@ -56,9 +55,6 @@ trait Viewer
 
     /**
      * 是否浏览过 $preferenceable
-     *
-     * @param Model $preferenceable
-     * @return boolean
      */
     public function hasViewed(Model $preferenceable): bool
     {
@@ -113,22 +109,21 @@ trait Viewer
             ->delete();
     }
 
-
     /**
      * 为 $preferenceables 附加浏览状态
      *
-     * @param mixed $preferenceables
-     * @param callable|null $resolver
+     * @param  mixed  $preferenceables
+     * @param  ?callable $resolver
      * @return mixed
      */
-    public function attachViewStatus(&$preferenceables, ?callable $resolver = null) : mixed
+    public function attachViewStatus(&$preferenceables, ?callable $resolver = null): mixed
     {
         $views = $this->views()->get()->keyBy(function ($item) {
             return \sprintf('%s:%s-%s:%s', $item->preferenceable_type, $item->preferenceable_id, $item->scope_type, $item->scope_id);
         });
 
         $attachStatus = function ($preferenceable) use ($views, $resolver) {
-            $resolver = $resolver ?? fn($m) => $m;
+            $resolver = $resolver ?? fn ($m) => $m;
             $preferenceable = $resolver($preferenceable);
 
             if ($preferenceable && \in_array(Viewable::class, \class_uses_recursive($preferenceable))) {
@@ -159,10 +154,9 @@ trait Viewer
         }
     }
 
-
     /**
      * views 关联
-     *
+     * 
      * @return MorphMany
      */
     public function views(): MorphMany

@@ -15,12 +15,8 @@ use Wsmallnews\Preference\Support\Utils;
 
 trait Liker
 {
-
     /**
      * 喜欢 $preferenceable
-     *
-     * @param Model $preferenceable
-     * @return Preference
      */
     public function like(Model $preferenceable): Preference
     {
@@ -52,9 +48,6 @@ trait Liker
 
     /**
      * 取消喜欢 $preferenceable
-     *
-     * @param Model $preferenceable
-     * @return bool
      */
     public function unlike(Model $preferenceable): bool
     {
@@ -73,11 +66,10 @@ trait Liker
         return true;
     }
 
-    
     /**
      * 切换喜欢状态
      *
-     * @param Model $object
+     * @param  Model  $object
      * @return Preference
      */
     public function toggleLike(Model $preferenceable)
@@ -87,9 +79,6 @@ trait Liker
 
     /**
      * 是否喜欢 $preferenceable
-     *
-     * @param Model $preferenceable
-     * @return bool
      */
     public function hasLiked(Model $preferenceable): bool
     {
@@ -98,7 +87,6 @@ trait Liker
             ->snScope($preferenceable->getScopeType(), $preferenceable->getScopeId())
             ->count() > 0;
     }
-
 
     /**
      * Get Query Builder for likes
@@ -115,12 +103,10 @@ trait Liker
     //     );
     // }
 
-
     /**
      * 为 $preferenceables 附加喜欢状态
      *
-     * @param mixed $preferenceables
-     * @param callable|null $resolver
+     * @param  mixed  $preferenceables
      * @return mixed
      */
     public function attachLikeStatus(&$preferenceables, ?callable $resolver = null)
@@ -168,11 +154,8 @@ trait Liker
     //     });
     // }
 
-
     /**
      * likes 关联
-     *
-     * @return MorphMany
      */
     public function likes(): MorphMany
     {
