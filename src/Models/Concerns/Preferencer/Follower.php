@@ -69,8 +69,8 @@ trait Follower
     /**
      * 更新对方关注记录中的 followed_at 字段
      *
-     * @param  Model  $target 被关注的对象
-     * @param  string|null  $followedAt 关注时间，null 表示取消
+     * @param  Model  $target  被关注的对象
+     * @param  string|null  $followedAt  关注时间，null 表示取消
      */
     protected function updateFollowedAt(Model $target, ?string $followedAt): void
     {
@@ -78,7 +78,7 @@ trait Follower
             ->withPreferenceable($this)
             ->snScope($this->getScopeType(), $this->getScopeId())
             ->update([
-                'options' => \DB::raw("JSON_SET(options, '$.followed_at', " . ($followedAt ? "'{$followedAt}'" : 'null') . ")"),
+                'options' => \DB::raw("JSON_SET(options, '$.followed_at', " . ($followedAt ? "'{$followedAt}'" : 'null') . ')'),
             ]);
     }
 
@@ -114,7 +114,6 @@ trait Follower
     /**
      * 切换关注状态
      *
-     * @param  Model  $preferenceable
      * @return Preference|bool
      */
     public function toggleFollow(Model $preferenceable)
@@ -206,7 +205,7 @@ trait Follower
             case \is_array($preferenceables):
                 return \collect($preferenceables)->transform($attachStatus);
             default:
-                throw new \InvalidArgumentException('Invalid argument type.');
+                throw new InvalidArgumentException('Invalid argument type.');
         }
     }
 
