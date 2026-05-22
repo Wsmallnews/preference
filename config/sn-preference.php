@@ -4,7 +4,7 @@ use Wsmallnews\Preference\Models;
 
 return [
     /**
-     * Default scopeable
+     * Default scopeable configuration
      */
     'scopeable' => [
         'scope_type' => 'sn-preference',
@@ -19,7 +19,7 @@ return [
     ],
 
     /**
-     * 文件基础目录，会自动拼接当前年月日 (仅用于 filament 默认上传组件 (Forms\Components\FileUpload))
+     * Base file directory, will automatically append current date (used only for filament default upload component)
      */
     'file_directory' => 'sn/preference/',
 ];

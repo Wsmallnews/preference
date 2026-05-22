@@ -10,10 +10,10 @@ use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Artisan;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Wsmallnews\Preference\Commands\PreferenceCommand;
 use Wsmallnews\Preference\Support\Utils;
 
 class PreferenceServiceProvider extends PackageServiceProvider
@@ -27,20 +27,20 @@ class PreferenceServiceProvider extends PackageServiceProvider
         $package->name(static::$name)
             ->hasCommands($this->getCommands())
             ->hasConfigFile()
+            ->hasMigrations($this->getMigrations())
             ->hasTranslations()
             ->hasViews(static::$viewNamespace)
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
+                    ->startWith(function (InstallCommand $command) {
+                        Artisan::call('sn-support:install', [], $command->getOutput());
+                        $command->comment("  Installed: sn-support");
+                    })
                     ->publishConfigFile()
                     ->publishMigrations()
                     ->askToRunMigrations()
                     ->askToStarRepoOnGitHub('wsmallnews/preference');
             });
-
-        if (file_exists($package->basePath('/../database/migrations'))) {
-            $package->hasMigrations($this->getMigrations());
-            $package->runsMigrations();
-        }
     }
 
     public function packageRegistered(): void {}
@@ -98,9 +98,7 @@ class PreferenceServiceProvider extends PackageServiceProvider
      */
     protected function getCommands(): array
     {
-        return [
-            PreferenceCommand::class,
-        ];
+        return [];
     }
 
     /**
@@ -133,7 +131,7 @@ class PreferenceServiceProvider extends PackageServiceProvider
     protected function getMigrations(): array
     {
         return [
-            '2026_04_15_162434_create_sn_preferences_table',
+            'create_sn_preferences_table',
         ];
     }
 }
