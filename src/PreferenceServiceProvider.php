@@ -10,10 +10,9 @@ use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Artisan;
-use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Wsmallnews\Preference\Commands\PreferenceInstallCommand;
 use Wsmallnews\Preference\Support\Utils;
 
 class PreferenceServiceProvider extends PackageServiceProvider
@@ -29,18 +28,7 @@ class PreferenceServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasMigrations($this->getMigrations())
             ->hasTranslations()
-            ->hasViews(static::$viewNamespace)
-            ->hasInstallCommand(function (InstallCommand $command) {
-                $command
-                    ->startWith(function (InstallCommand $command) {
-                        Artisan::call('sn-support:install', [], $command->getOutput());
-                        $command->comment("  Installed: sn-support");
-                    })
-                    ->publishConfigFile()
-                    ->publishMigrations()
-                    ->askToRunMigrations()
-                    ->askToStarRepoOnGitHub('wsmallnews/preference');
-            });
+            ->hasViews(static::$viewNamespace);
     }
 
     public function packageRegistered(): void {}
@@ -98,7 +86,9 @@ class PreferenceServiceProvider extends PackageServiceProvider
      */
     protected function getCommands(): array
     {
-        return [];
+        return [
+            PreferenceInstallCommand::class,
+        ];
     }
 
     /**
