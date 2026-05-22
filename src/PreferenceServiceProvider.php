@@ -34,7 +34,7 @@ class PreferenceServiceProvider extends PackageServiceProvider
                 $command
                     ->startWith(function (InstallCommand $command) {
                         Artisan::call('sn-support:install', [], $command->getOutput());
-                        $command->comment("  Installed: sn-support");
+                        $command->comment('  Installed: sn-support');
                     })
                     ->publishConfigFile()
                     ->publishMigrations()
