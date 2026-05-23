@@ -10,9 +10,13 @@ use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Filesystem\Filesystem;
+use Livewire\Livewire;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Wsmallnews\Preference\Commands\PreferenceInstallCommand;
+use Wsmallnews\Preference\Filament\Pages\Preference\Components\Follows;
+use Wsmallnews\Preference\Filament\Pages\Preference\Components\Likes;
+use Wsmallnews\Preference\Filament\Pages\Preference\Components\Views;
 use Wsmallnews\Preference\Support\Utils;
 
 class PreferenceServiceProvider extends PackageServiceProvider
@@ -62,6 +66,11 @@ class PreferenceServiceProvider extends PackageServiceProvider
                 ], 'preference-stubs');
             }
         }
+
+        // 注册 Filament Panel 组件
+        Livewire::component('sn-preference-fi-views', Views::class);
+        Livewire::component('sn-preference-fi-likes', Likes::class);
+        Livewire::component('sn-preference-fi-follows', Follows::class);
     }
 
     protected function getAssetPackageName(): ?string
