@@ -1,7 +1,5 @@
 @php
     use Filament\Support\Icons\Heroicon;
-
-    $listType = $preferencer ? 'preferencer' : 'preferenceable';
 @endphp
 
 <div class="w-full">
@@ -13,10 +11,16 @@
             <h3 class="sn-h3-text">
                 @if ($listType == 'preferencer')
                     {{ __('sn-preference::preference.components.views_title_user') }}
-                @else
+                @elseif ($listType == 'preferenceable')
                     {{ __('sn-preference::preference.components.views_title_subject') }}
+                @else
+                    {{ __('sn-preference::preference.components.views_title') }}
                 @endif
             </h3>
+            <div class="flex items-center gap-2 sn-tip-text">
+                <x-filament::icon icon="heroicon-m-eye" class="size-4" />
+                <span>{{ $this->getCount() }}</span>
+            </div>
         </div>
 
         @if ($views->isNotEmpty())
@@ -27,14 +31,13 @@
                 :paginator-link="$paginatorLink"
                 :page-name="$pageName"
             >
-                @foreach($views as $preference)
+                @foreach ($views as $preference)
                     @if ($listType == 'preferenceable')
-                        @php
-                            $preferencer = $preference->preferencer;
-                        @endphp
-
-                        <x-sn-support::identifiable :identifiable="$preferencer" />
+                        <x-sn-preference::preferencer :preference="$preference" :preferencer="$preference->preferencer" contained />
+                    @elseif ($listType == 'preferencer')
+                        <x-sn-preference::preferenceable :preference="$preference" :preferenceable="$preference->preferenceable" contained />
                     @else
+                        <x-sn-preference::preference :preference="$preference" contained />
                     @endif
                 @endforeach
             </x-sn-support::paginators.container>

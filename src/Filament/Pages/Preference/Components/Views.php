@@ -6,6 +6,7 @@ use Filament\Facades\Filament;
 use Filament\Pages\BasePage;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Livewire\Attributes\Computed;
 use Livewire\WithoutUrlPagination;
 use Wsmallnews\Preference\Support\Utils;
 use Wsmallnews\Support\Livewire\Concerns\CanBeContained;
@@ -38,12 +39,23 @@ class Views extends BasePage
      */
     public Collection $views;
 
+    /**
+     * 浏览记录列表类型 preferencer | preferenceable | preference
+     */
+    public string $listType;
+
     protected string $view = 'sn-preference::filament.pages.preference.components.views';
 
     public function mount()
     {
         $this->hasAuthUser() || $this->authUser(Filament::auth()->user());
         $this->views = $this->views ?? collect([]);
+
+        $this->listType = match (true) {
+            filled($this->preferencer) => 'preferencer',
+            filled($this->preferenceable) => 'preferenceable',
+            default => 'preference',
+        };
     }
 
     public function getEmptyLabel(): ?string
@@ -64,20 +76,17 @@ class Views extends BasePage
         return $this->getProperty('emptyTipLabel', __('sn-preference::preference.components.views_empty_description_subject'));
     }
 
-    protected function getCurrents()
+    #[Computed]
+    public function getCount(): int
     {
-        return $this->views;
+        $query = $this->getQuery();
+
+        return $query->count();
     }
 
     public function getViewData(): array
     {
-        $query = null;
-        $query = match (true) {
-            $this->preferenceable => $this->preferenceable->views()->with(['preferencer']),           // 通过当前主体视角模型记录查询
-            $this->preferencer => $this->preferencer->views()->with(['preferenceable']),               // 通过用户视角模型记录查询
-            default => Utils::getPreferenceModel()::query()
-                ->withType('view')->with(['preferenceable', 'preferencer']),                   // 查询 scopeable 下所有浏览记录
-        };
+        $query = $this->getQuery();
 
         $query = $query->snScope(...$this->getScopeable())
             ->latest('updated_at');
@@ -87,5 +96,24 @@ class Views extends BasePage
         return [
             'paginatorLink' => $this->links,
         ];
+    }
+
+    protected function getCurrents()
+    {
+        return $this->views;
+    }
+
+
+    /**
+     * 获取浏览记录查询对象
+     */
+    protected function getQuery()
+    {
+        return match (true) {
+            filled($this->preferenceable) => $this->preferenceable->views()->with(['preferencer']),           // 通过当前主体视角模型记录查询
+            filled($this->preferencer) => $this->preferencer->views()->with(['preferenceable']),               // 通过用户视角模型记录查询
+            default => Utils::getPreferenceModel()::query()
+                ->withType('view')->with(['preferenceable', 'preferencer']),                   // 查询 scopeable 下所有浏览记录
+        };
     }
 }
