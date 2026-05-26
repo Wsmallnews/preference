@@ -98,7 +98,6 @@ class Follows extends BasePage
         ];
     }
 
-
     protected function getCurrents()
     {
         return $this->follows;

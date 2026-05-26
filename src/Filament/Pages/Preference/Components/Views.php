@@ -103,7 +103,6 @@ class Views extends BasePage
         return $this->views;
     }
 
-
     /**
      * 获取浏览记录查询对象
      */
