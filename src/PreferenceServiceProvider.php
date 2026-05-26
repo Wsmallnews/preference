@@ -17,6 +17,9 @@ use Wsmallnews\Preference\Commands\PreferenceInstallCommand;
 use Wsmallnews\Preference\Filament\Pages\Preference\Components\Follows;
 use Wsmallnews\Preference\Filament\Pages\Preference\Components\Likes;
 use Wsmallnews\Preference\Filament\Pages\Preference\Components\Views;
+use Wsmallnews\Preference\Livewire\Components\Follows as FollowsComponent;
+use Wsmallnews\Preference\Livewire\Components\Likes as LikesComponent;
+use Wsmallnews\Preference\Livewire\Components\Views as ViewsComponent;
 use Wsmallnews\Preference\Support\Utils;
 
 class PreferenceServiceProvider extends PackageServiceProvider
@@ -71,6 +74,11 @@ class PreferenceServiceProvider extends PackageServiceProvider
         Livewire::component('sn-preference-fi-views', Views::class);
         Livewire::component('sn-preference-fi-likes', Likes::class);
         Livewire::component('sn-preference-fi-follows', Follows::class);
+
+        // 注册前端通用 Livewire 组件
+        Livewire::component('sn-preference-components-views', ViewsComponent::class);
+        Livewire::component('sn-preference-components-likes', LikesComponent::class);
+        Livewire::component('sn-preference-components-follows', FollowsComponent::class);
     }
 
     protected function getAssetPackageName(): ?string
