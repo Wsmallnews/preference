@@ -31,8 +31,8 @@
     }}
 >
     <div class="w-12 h-12 shrink-0 overflow-hidden rounded-md bg-gray-100 dark:bg-gray-800">
-        @if ($preferenceable->getSnPreferenceableCoverUrl())
-            <img class="w-full h-full object-cover" src="{{ files_url($preferenceable->getSnPreferenceableCoverUrl()) }}" alt="{{ $preferenceable->getSnPreferenceableTitle() }}" />
+        @if ($preferenceable->getSnSubjectCoverUrl())
+            <img class="w-full h-full object-cover" src="{{ files_url($preferenceable->getSnSubjectCoverUrl()) }}" alt="{{ $preferenceable->getSnSubjectTitle() }}" />
         @else
             <div class="sn-image-placeholder rounded-md">
                 <x-filament::icon :icon="Heroicon::Photo" class="size-5" aria-hidden="true" />
@@ -42,9 +42,9 @@
 
     <div class="flex flex-col grow gap-1 min-w-0">
         <div class="flex items-center gap-2">
-            @if ($preferenceable->getSnPreferenceableTitle())
+            @if ($preferenceable->getSnSubjectTitle())
                 <span class="sn-content-text sn-truncate">
-                    {{ $preferenceable->getSnPreferenceableTitle() }}
+                    {{ $preferenceable->getSnSubjectTitle() }}
                 </span>
             @endif
 
@@ -53,9 +53,9 @@
             @endisset
         </div>
 
-        @if ($preferenceable->getSnPreferenceableDescription())
+        @if ($preferenceable->getSnSubjectDescription())
             <span class="sn-descript-text sn-truncate-2">
-                {{ $preferenceable->getSnPreferenceableDescription() }}
+                {{ $preferenceable->getSnSubjectDescription() }}
             </span>
         @endif
 
