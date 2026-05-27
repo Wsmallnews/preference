@@ -107,12 +107,12 @@ class Views extends Base implements HasActions, HasSchemas
             ->requiresConfirmation()
             ->modalHeading(__('sn-preference::preference.action.delete_view_heading'))
             ->modalDescription(__('sn-preference::preference.action.delete_view_description'))
-            ->visible(fn(): bool => $this->canManage())
+            ->visible(fn (): bool => $this->canManage())
             ->action(function (array $arguments) {
                 $preference = Utils::getPreferenceModel()::findOrFail($arguments['key']);
                 $preference->delete();
 
-                $this->views = $this->views->filter(fn($item) => $item->id !== (int) $arguments['key']);
+                $this->views = $this->views->filter(fn ($item) => $item->id !== (int) $arguments['key']);
 
                 Notification::make()
                     ->title(__('sn-preference::preference.action.delete_view_success'))
@@ -129,11 +129,11 @@ class Views extends Base implements HasActions, HasSchemas
             ->color('danger')
             ->requiresConfirmation()
             ->modalHeading(__('sn-preference::preference.action.batch_delete_view_heading', ['count' => $this->getSelectedCount()]))
-            ->visible(fn(): bool => $this->canManage() && $this->getSelectedCount() > 0)
+            ->visible(fn (): bool => $this->canManage() && $this->getSelectedCount() > 0)
             ->action(function () {
                 Utils::getPreferenceModel()::whereIn('id', $this->selected)->delete();
 
-                $this->views = $this->views->filter(fn($item) => ! in_array($item->id, $this->selected));
+                $this->views = $this->views->filter(fn ($item) => ! in_array($item->id, $this->selected));
 
                 $count = count($this->selected);
                 $this->selected = [];
