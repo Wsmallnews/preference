@@ -7,6 +7,8 @@ use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Concerns\InteractsWithSchemas;
+use Filament\Schemas\Contracts\HasSchemas;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
@@ -18,7 +20,7 @@ use Wsmallnews\Support\Livewire\Concerns\CanPagination;
 use Wsmallnews\Support\Livewire\Concerns\HasAuth;
 use Wsmallnews\Support\Livewire\Concerns\HasProperties;
 
-class Follows extends Base implements HasActions
+class Follows extends Base implements HasActions, HasSchemas
 {
     use CanBeContained;
     use CanManage;
@@ -26,6 +28,7 @@ class Follows extends Base implements HasActions
     use HasAuth;
     use HasProperties;
     use InteractsWithActions;
+    use InteractsWithSchemas;
     use WithoutUrlPagination;
 
     public ?Model $preferencer = null;
@@ -101,12 +104,12 @@ class Follows extends Base implements HasActions
             ->size('sm')
             ->requiresConfirmation()
             ->modalHeading(__('sn-preference::preference.action.unfollow_heading'))
-            ->visible(fn (): bool => $this->canManage())
+            ->visible(fn(): bool => $this->canManage())
             ->action(function (array $arguments) {
                 $preference = Utils::getPreferenceModel()::findOrFail($arguments['key']);
                 $preference->delete();
 
-                $this->follows = $this->follows->filter(fn ($item) => $item->id !== (int) $arguments['key']);
+                $this->follows = $this->follows->filter(fn($item) => $item->id !== (int) $arguments['key']);
 
                 Notification::make()
                     ->title(__('sn-preference::preference.action.unfollow_success'))
@@ -123,11 +126,11 @@ class Follows extends Base implements HasActions
             ->color('danger')
             ->requiresConfirmation()
             ->modalHeading(__('sn-preference::preference.action.batch_unfollow_heading', ['count' => $this->getSelectedCount()]))
-            ->visible(fn (): bool => $this->canManage() && $this->getSelectedCount() > 0)
+            ->visible(fn(): bool => $this->canManage() && $this->getSelectedCount() > 0)
             ->action(function () {
                 Utils::getPreferenceModel()::whereIn('id', $this->selected)->delete();
 
-                $this->follows = $this->follows->filter(fn ($item) => ! in_array($item->id, $this->selected));
+                $this->follows = $this->follows->filter(fn($item) => ! in_array($item->id, $this->selected));
 
                 $count = count($this->selected);
                 $this->selected = [];

@@ -7,6 +7,8 @@ use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Concerns\InteractsWithSchemas;
+use Filament\Schemas\Contracts\HasSchemas;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
@@ -18,7 +20,7 @@ use Wsmallnews\Support\Livewire\Concerns\CanPagination;
 use Wsmallnews\Support\Livewire\Concerns\HasAuth;
 use Wsmallnews\Support\Livewire\Concerns\HasProperties;
 
-class Views extends Base implements HasActions
+class Views extends Base implements HasActions, HasSchemas
 {
     use CanBeContained;
     use CanManage;
@@ -26,6 +28,7 @@ class Views extends Base implements HasActions
     use HasAuth;
     use HasProperties;
     use InteractsWithActions;
+    use InteractsWithSchemas;
     use WithoutUrlPagination;
 
     public ?Model $preferencer = null;
@@ -104,12 +107,12 @@ class Views extends Base implements HasActions
             ->requiresConfirmation()
             ->modalHeading(__('sn-preference::preference.action.delete_view_heading'))
             ->modalDescription(__('sn-preference::preference.action.delete_view_description'))
-            ->visible(fn (): bool => $this->canManage())
+            ->visible(fn(): bool => $this->canManage())
             ->action(function (array $arguments) {
                 $preference = Utils::getPreferenceModel()::findOrFail($arguments['key']);
                 $preference->delete();
 
-                $this->views = $this->views->filter(fn ($item) => $item->id !== (int) $arguments['key']);
+                $this->views = $this->views->filter(fn($item) => $item->id !== (int) $arguments['key']);
 
                 Notification::make()
                     ->title(__('sn-preference::preference.action.delete_view_success'))
@@ -126,11 +129,11 @@ class Views extends Base implements HasActions
             ->color('danger')
             ->requiresConfirmation()
             ->modalHeading(__('sn-preference::preference.action.batch_delete_view_heading', ['count' => $this->getSelectedCount()]))
-            ->visible(fn (): bool => $this->canManage() && $this->getSelectedCount() > 0)
+            ->visible(fn(): bool => $this->canManage() && $this->getSelectedCount() > 0)
             ->action(function () {
                 Utils::getPreferenceModel()::whereIn('id', $this->selected)->delete();
 
-                $this->views = $this->views->filter(fn ($item) => ! in_array($item->id, $this->selected));
+                $this->views = $this->views->filter(fn($item) => ! in_array($item->id, $this->selected));
 
                 $count = count($this->selected);
                 $this->selected = [];
