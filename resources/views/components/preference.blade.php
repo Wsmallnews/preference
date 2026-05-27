@@ -1,7 +1,7 @@
 @props([
     'preference',
     'contained' => false,
-    'isLink' => false,
+    'hasLink' => false,
 ])
 
 @php
@@ -20,6 +20,12 @@
         throw new PreferenceException(get_class($preferenceable) . ' model must implement `\Wsmallnews\Support\Contracts\HasSnSubject` interface.');
     }
 
+    $rawHrefUrl = $preferenceable
+        ? $preferenceable->getSnSubjectHrefUrl()
+        : ($preferencer ? $preferencer->getSnHrefUrl() : null);
+    $href = $rawHrefUrl ? (string) $rawHrefUrl : '';
+    $tag = ($hasLink && $href !== '') ? 'a' : 'div';
+
     $timeLabel = match ($preference->type) {
         'follow' => __('sn-preference::preference.widget.followed_at', ['time' => $preference->created_at->diffForHumans()]),
         'like' => __('sn-preference::preference.widget.liked_at', ['time' => $preference->created_at->diffForHumans()]),
@@ -34,14 +40,18 @@
     };
 @endphp
 
-<div
+<{{ $tag }}
     {{
         $attributes->class([
             'sn-container' => $contained,
-            'sn-hover sn-link' => $isLink,
+            'sn-hover sn-link' => $hasLink,
             'flex flex-col group',
         ])
     }}
+    {{ ($tag === 'a') ? \Filament\Support\generate_href_html($href) : '' }}
+    @if ($hasLink && $href === '')
+        wire:click.stop="$dispatch('sn-preference-preference-click', { preference: {{ $preference->id }} })"
+    @endif
 >
     {{-- 上排: preferencer 操作者 --}}
     @if ($preferencer)
@@ -96,7 +106,7 @@
                     <div class="sn-tip-text">
                         {{ $timeLabel }}
                     </div>
-                    @if ($isLink)
+                    @if ($hasLink)
                         <div class="sn-gray-text hidden group-hover:block">
                             <x-filament::icon :icon="Heroicon::ChevronRight" class="size-5" aria-hidden="true" />
                         </div>
@@ -148,4 +158,4 @@
             <div class="w-[44px] shrink-0"></div>
         </div>
     @endif
-</div>
+</{{ $tag }}>

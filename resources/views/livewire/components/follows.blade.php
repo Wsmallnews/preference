@@ -72,7 +72,7 @@
                                     :preference="$preference"
                                     :preferencer="$preference->preferencer"
                                     contained
-                                    :isLink="!$manageMode"
+                                    :has-link="!$manageMode"
                                 >
                                     @if ($preference->options['followed_at'] ?? false)
                                         <x-slot name="badge">
@@ -91,7 +91,7 @@
                                     :preference="$preference"
                                     :preferenceable="$preference->preferenceable"
                                     contained
-                                    :isLink="!$manageMode"
+                                    :has-link="!$manageMode"
                                 >
                                     @if ($preference->options['followed_at'] ?? false)
                                         <x-slot name="badge">
@@ -109,7 +109,7 @@
                                 <x-sn-preference::preference
                                     :preference="$preference"
                                     contained
-                                    :isLink="!$manageMode"
+                                    :has-link="!$manageMode"
                                 >
                                     @if ($preference->options['followed_at'] ?? false)
                                         <x-slot name="badge">

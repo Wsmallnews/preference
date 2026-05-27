@@ -68,11 +68,11 @@
 
                         <div class="flex-1 min-w-0 cursor-pointer" @if(!$manageMode) wire:click="toggleItem({{ $preference->id }})" @endif>
                             @if ($listType == 'preferenceable')
-                                <x-sn-preference::preferencer :preference="$preference" :preferencer="$preference->preferencer" contained :isLink="!$manageMode" />
+                                <x-sn-preference::preferencer :preference="$preference" :preferencer="$preference->preferencer" contained :has-link="!$manageMode" />
                             @elseif ($listType == 'preferencer')
-                                <x-sn-preference::preferenceable :preference="$preference" :preferenceable="$preference->preferenceable" contained :isLink="!$manageMode" />
+                                <x-sn-preference::preferenceable :preference="$preference" :preferenceable="$preference->preferenceable" contained :has-link="!$manageMode" />
                             @else
-                                <x-sn-preference::preference :preference="$preference" contained :isLink="!$manageMode" />
+                                <x-sn-preference::preference :preference="$preference" contained :has-link="!$manageMode" />
                             @endif
                         </div>
 
