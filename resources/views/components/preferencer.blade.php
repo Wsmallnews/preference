@@ -3,6 +3,7 @@
     'preferencer',
     'contained' => false,
     'hasLink' => false,
+    'embedded' => false,
 ])
 
 @php
@@ -29,7 +30,7 @@
     {{
         $attributes->class([
             'sn-container p-4' => $contained,
-            'sn-hover sn-link' => $hasLink,
+            'sn-hover sn-link' => $hasLink && ! $embedded,
             'flex items-center gap-4 justify-between group',
         ])
     }}

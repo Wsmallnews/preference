@@ -2,6 +2,7 @@
     'preference',
     'contained' => false,
     'hasLink' => false,
+    'embedded' => false,
 ])
 
 @php
@@ -44,7 +45,7 @@
     {{
         $attributes->class([
             'sn-container' => $contained,
-            'sn-hover sn-link' => $hasLink,
+            'sn-hover sn-link' => $hasLink && ! $embedded,
             'flex flex-col group',
         ])
     }}

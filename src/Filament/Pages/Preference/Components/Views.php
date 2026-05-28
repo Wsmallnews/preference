@@ -88,8 +88,7 @@ class Views extends BasePage
     {
         $query = $this->getQuery();
 
-        $query = $query->snScope(...$this->getScopeable())
-            ->latest('updated_at');
+        $query = $query->latest('updated_at');
 
         $this->views = $this->withPagination($query);
 
@@ -108,11 +107,13 @@ class Views extends BasePage
      */
     protected function getQuery()
     {
-        return match (true) {
+        $query = match (true) {
             filled($this->preferenceable) => $this->preferenceable->views()->with(['preferencer']),           // 通过当前主体视角模型记录查询
             filled($this->preferencer) => $this->preferencer->views()->with(['preferenceable']),               // 通过用户视角模型记录查询
             default => Utils::getPreferenceModel()::query()
                 ->withType('view')->with(['preferenceable', 'preferencer']),                   // 查询 scopeable 下所有浏览记录
         };
+
+        return $query->snScope(...$this->getScopeable());
     }
 }
