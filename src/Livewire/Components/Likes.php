@@ -87,12 +87,12 @@ class Likes extends Base implements HasActions, HasSchemas
             ->link()
             ->requiresConfirmation()
             ->modalHeading(__('sn-preference::preference.action.unlike_heading'))
-            ->visible(fn(): bool => $this->isManageable())
+            ->visible(fn (): bool => $this->isManageable())
             ->action(function (array $arguments) {
                 $preference = Utils::getPreferenceModel()::findOrFail($arguments['key']);
                 $preference->delete();
 
-                $this->likes = $this->likes->filter(fn($item) => $item->id !== (int) $arguments['key']);
+                $this->likes = $this->likes->filter(fn ($item) => $item->id !== (int) $arguments['key']);
 
                 Notification::make()
                     ->title(__('sn-preference::preference.action.unlike_success'))
@@ -109,11 +109,11 @@ class Likes extends Base implements HasActions, HasSchemas
             ->color('danger')
             ->requiresConfirmation()
             ->modalHeading(__('sn-preference::preference.action.batch_unlike_heading', ['count' => $this->getSelectedCount()]))
-            ->visible(fn(): bool => $this->isManageable() && $this->getSelectedCount() > 0)
+            ->visible(fn (): bool => $this->isManageable() && $this->getSelectedCount() > 0)
             ->action(function () {
                 Utils::getPreferenceModel()::whereIn('id', $this->selected)->delete();
 
-                $this->likes = $this->likes->filter(fn($item) => ! in_array($item->id, $this->selected));
+                $this->likes = $this->likes->filter(fn ($item) => ! in_array($item->id, $this->selected));
 
                 $count = count($this->selected);
                 $this->selected = [];
@@ -129,7 +129,6 @@ class Likes extends Base implements HasActions, HasSchemas
     {
         return $this->manageable && $this->listType === 'preferencer';
     }
-
 
     public function render()
     {

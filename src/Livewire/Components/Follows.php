@@ -85,12 +85,12 @@ class Follows extends Base implements HasActions, HasSchemas
             ->size('sm')
             ->requiresConfirmation()
             ->modalHeading(__('sn-preference::preference.action.unfollow_heading'))
-            ->visible(fn(): bool => $this->isManageable())
+            ->visible(fn (): bool => $this->isManageable())
             ->action(function (array $arguments) {
                 $preference = Utils::getPreferenceModel()::findOrFail($arguments['key']);
                 $preference->delete();
 
-                $this->follows = $this->follows->filter(fn($item) => $item->id !== (int) $arguments['key']);
+                $this->follows = $this->follows->filter(fn ($item) => $item->id !== (int) $arguments['key']);
 
                 Notification::make()
                     ->title(__('sn-preference::preference.action.unfollow_success'))
@@ -107,11 +107,11 @@ class Follows extends Base implements HasActions, HasSchemas
             ->color('danger')
             ->requiresConfirmation()
             ->modalHeading(__('sn-preference::preference.action.batch_unfollow_heading', ['count' => $this->getSelectedCount()]))
-            ->visible(fn(): bool => $this->isManageable() && $this->getSelectedCount() > 0)
+            ->visible(fn (): bool => $this->isManageable() && $this->getSelectedCount() > 0)
             ->action(function () {
                 Utils::getPreferenceModel()::whereIn('id', $this->selected)->delete();
 
-                $this->follows = $this->follows->filter(fn($item) => ! in_array($item->id, $this->selected));
+                $this->follows = $this->follows->filter(fn ($item) => ! in_array($item->id, $this->selected));
 
                 $count = count($this->selected);
                 $this->selected = [];
