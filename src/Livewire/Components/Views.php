@@ -156,7 +156,6 @@ class Views extends Base implements HasActions, HasSchemas
         return $this->views;
     }
 
-
     /**
      * 获取分页查询指纹，用于 CanPagination 的缓存失效检测。
      */

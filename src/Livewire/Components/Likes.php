@@ -161,7 +161,6 @@ class Likes extends Base implements HasActions, HasSchemas
         ]));
     }
 
-
     protected function getQuery()
     {
         $query = match (true) {
