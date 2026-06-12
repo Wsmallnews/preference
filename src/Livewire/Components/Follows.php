@@ -134,7 +134,7 @@ class Follows extends Base implements HasActions, HasSchemas
 
         $query = $query->latest('updated_at');
 
-        $this->follows = $this->withPagination($query);
+        $this->follows = $this->withPagination($query, $this->getFingerprint());
 
         return view('sn-preference::livewire.components.follows', [
             'paginatorLink' => $this->links,
@@ -144,6 +144,19 @@ class Follows extends Base implements HasActions, HasSchemas
     protected function getCurrents()
     {
         return $this->follows;
+    }
+
+    /**
+     * 获取分页查询指纹，用于 CanPagination 的缓存失效检测。
+     */
+    protected function getFingerprint(): string
+    {
+        return md5(serialize([
+            'listType' => $this->listType,
+            'preferencer' => $this->preferencer?->getKey(),
+            'preferenceable' => $this->preferenceable?->getKey(),
+            ...$this->getScopeable(),
+        ]));
     }
 
     protected function getQuery()

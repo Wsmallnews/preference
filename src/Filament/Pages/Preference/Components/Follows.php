@@ -90,7 +90,7 @@ class Follows extends BasePage
 
         $query = $query->latest('updated_at');
 
-        $this->follows = $this->withPagination($query);
+        $this->follows = $this->withPagination($query, $this->getFingerprint());
 
         return [
             'paginatorLink' => $this->links,
@@ -100,6 +100,16 @@ class Follows extends BasePage
     protected function getCurrents()
     {
         return $this->follows;
+    }
+
+    protected function getFingerprint(): string
+    {
+        return md5(serialize([
+            'listType' => $this->listType,
+            'preferencer' => $this->preferencer?->getKey(),
+            'preferenceable' => $this->preferenceable?->getKey(),
+            ...$this->getScopeable(),
+        ]));
     }
 
     /**

@@ -90,7 +90,7 @@ class Views extends BasePage
 
         $query = $query->latest('updated_at');
 
-        $this->views = $this->withPagination($query);
+        $this->views = $this->withPagination($query, $this->getFingerprint());
 
         return [
             'paginatorLink' => $this->links,
@@ -100,6 +100,16 @@ class Views extends BasePage
     protected function getCurrents()
     {
         return $this->views;
+    }
+
+    protected function getFingerprint(): string
+    {
+        return md5(serialize([
+            'listType' => $this->listType,
+            'preferencer' => $this->preferencer?->getKey(),
+            'preferenceable' => $this->preferenceable?->getKey(),
+            ...$this->getScopeable(),
+        ]));
     }
 
     /**

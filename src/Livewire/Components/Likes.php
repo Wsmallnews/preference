@@ -136,7 +136,7 @@ class Likes extends Base implements HasActions, HasSchemas
 
         $query = $query->latest('updated_at');
 
-        $this->likes = $this->withPagination($query);
+        $this->likes = $this->withPagination($query, $this->getFingerprint());
 
         return view('sn-preference::livewire.components.likes', [
             'paginatorLink' => $this->links,
@@ -147,6 +147,20 @@ class Likes extends Base implements HasActions, HasSchemas
     {
         return $this->likes;
     }
+
+    /**
+     * 获取分页查询指纹，用于 CanPagination 的缓存失效检测。
+     */
+    protected function getFingerprint(): string
+    {
+        return md5(serialize([
+            'listType' => $this->listType,
+            'preferencer' => $this->preferencer?->getKey(),
+            'preferenceable' => $this->preferenceable?->getKey(),
+            ...$this->getScopeable(),
+        ]));
+    }
+
 
     protected function getQuery()
     {

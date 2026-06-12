@@ -144,7 +144,7 @@ class Views extends Base implements HasActions, HasSchemas
 
         $query = $query->latest('updated_at');
 
-        $this->views = $this->withPagination($query);
+        $this->views = $this->withPagination($query, $this->getFingerprint());
 
         return view('sn-preference::livewire.components.views', [
             'paginatorLink' => $this->links,
@@ -154,6 +154,20 @@ class Views extends Base implements HasActions, HasSchemas
     protected function getCurrents()
     {
         return $this->views;
+    }
+
+
+    /**
+     * 获取分页查询指纹，用于 CanPagination 的缓存失效检测。
+     */
+    protected function getFingerprint(): string
+    {
+        return md5(serialize([
+            'listType' => $this->listType,
+            'preferencer' => $this->preferencer?->getKey(),
+            'preferenceable' => $this->preferenceable?->getKey(),
+            ...$this->getScopeable(),
+        ]));
     }
 
     protected function getQuery()
