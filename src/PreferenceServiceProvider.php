@@ -14,12 +14,6 @@ use Livewire\Livewire;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Wsmallnews\Preference\Commands\PreferenceInstallCommand;
-use Wsmallnews\Preference\Filament\Pages\Preference\Components\Follows;
-use Wsmallnews\Preference\Filament\Pages\Preference\Components\Likes;
-use Wsmallnews\Preference\Filament\Pages\Preference\Components\Views;
-use Wsmallnews\Preference\Livewire\Components\Follows as FollowsComponent;
-use Wsmallnews\Preference\Livewire\Components\Likes as LikesComponent;
-use Wsmallnews\Preference\Livewire\Components\Views as ViewsComponent;
 use Wsmallnews\Preference\Support\Utils;
 
 class PreferenceServiceProvider extends PackageServiceProvider
@@ -70,15 +64,16 @@ class PreferenceServiceProvider extends PackageServiceProvider
             }
         }
 
-        // 注册 Filament Panel 组件
-        Livewire::component('sn-preference-fi-views', Views::class);
-        Livewire::component('sn-preference-fi-likes', Likes::class);
-        Livewire::component('sn-preference-fi-follows', Follows::class);
-
-        // 注册前端通用 Livewire 组件
-        Livewire::component('sn-preference-components-views', ViewsComponent::class);
-        Livewire::component('sn-preference-components-likes', LikesComponent::class);
-        Livewire::component('sn-preference-components-follows', FollowsComponent::class);
+        // 注册 livewire 命名空间（自动发现 src/Livewire/ 下的组件）
+        Livewire::addNamespace(
+            namespace: 'sn-preference',
+            classNamespace: 'Wsmallnews\\Preference\\Livewire'
+        );
+        // 注册 Filament 命名空间下 preference 组件（自动发现 src/Filament/Pages/Preference/Components/ 下的组件）
+        Livewire::addNamespace(
+            namespace: 'sn-preference-fi-preference-components',
+            classNamespace: 'Wsmallnews\\Preference\\Filament\\Pages\\Preference\\Components'
+        );
     }
 
     protected function getAssetPackageName(): ?string

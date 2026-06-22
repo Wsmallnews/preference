@@ -1,5 +1,5 @@
 <x-filament-widgets::widget>
-    <livewire:sn-preference-fi-likes
+    <livewire:sn-preference-fi-preference-components::likes
         :properties="$this->getProperties()"
         :scope-type="$scopeType" :scope-id="$scopeId"
         :preferenceable="$preferenceable"
