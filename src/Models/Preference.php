@@ -2,9 +2,11 @@
 
 namespace Wsmallnews\Preference\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Wsmallnews\Support\Models\SupportModel;
+use Wsmallnews\Support\Support\Utils as SupportUtils;
 
 class Preference extends SupportModel
 {
@@ -49,5 +51,10 @@ class Preference extends SupportModel
             $preferenceable->getMorphClass() : app($preferenceable)->getMorphClass();
 
         return $query->where('preferenceable_type', $preferenceType);
+    }
+
+    public function team(): BelongsTo
+    {
+        return $this->belongsTo(SupportUtils::getTenantModel());
     }
 }
