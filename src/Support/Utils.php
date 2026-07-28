@@ -38,7 +38,7 @@ class Utils
         try {
             return SupportUtils::getScopeFromConfig('sn-preference.scopeable');
         } catch (InvalidScopeException $e) {
-            throw new PreferenceException('Scopeable配置错误: ' . $e->getMessage());
+            throw new PreferenceException('Scopeable configuration error. ' . $e->getMessage());
         }
     }
 
@@ -89,7 +89,7 @@ class Utils
         $model = self::getConfig('models')[$name] ?? null;
 
         if (blank($model) && $shouldException) {
-            throw new PreferenceException("模型 {$name} 不存在");
+            throw new PreferenceException("Model {$name} not found.");
         }
 
         return $model;

@@ -15,6 +15,7 @@ use Wsmallnews\Preference\Models\Concerns\Preferenceable\Followable;
 use Wsmallnews\Preference\Models\Preference;
 use Wsmallnews\Preference\Support\Utils;
 use Wsmallnews\User\Support\Utils as UserUtils;
+use Wsmallnews\Member\Support\Utils as MemberUtils;
 
 trait Follower
 {
@@ -161,9 +162,35 @@ trait Follower
     /**
      * 返回我关注的用户数量
      */
-    public function followingCount(): int
+    public function followingUserCount(): int
     {
         return $this->followingUsers()->count();
+    }
+
+    /**
+     * 返回我关注的成员列表 仅 MemberModel 类型
+     */
+    public function followingMembers(): MorphToMany
+    {
+        return $this->morphToMany(
+            MemberUtils::getMemberModel(),           // 目标模型
+            'preferenceable',         // 多态关联名
+            app(Utils::getPreferenceModel())->getTable(),            // 中间表名
+            'preferencer_id',         // 中间表的外键（指向当前模型）
+            'preferenceable_id'      // 中间表的另一个外键
+        )
+            ->wherePivot('preferenceable_type', (new (MemberUtils::getMemberModel()))->getMorphClass())  // 过滤被关注者类型
+            ->wherePivot('type', '=', 'follow')      // 过滤 preference 类类型
+            ->withPivot('preferenceable_type', 'options')         // 带上 preference 的其他信息
+            ->withTimestamps();               // 时间戳
+    }
+
+    /**
+     * 返回我关注的成员数量
+     */
+    public function followingMemberCount(): int
+    {
+        return $this->followingMembers()->count();
     }
 
     /**
