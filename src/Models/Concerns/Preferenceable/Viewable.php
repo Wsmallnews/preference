@@ -5,10 +5,10 @@ namespace Wsmallnews\Preference\Models\Concerns\Preferenceable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Wsmallnews\Member\Support\Utils as MemberUtils;
 use Wsmallnews\Preference\Models\Preference;
 use Wsmallnews\Preference\Support\Utils as PreferenceUtils;
 use Wsmallnews\User\Support\Utils as UserUtils;
-use Wsmallnews\Member\Support\Utils as MemberUtils;
 
 trait Viewable
 {

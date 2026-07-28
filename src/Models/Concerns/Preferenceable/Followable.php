@@ -5,8 +5,8 @@ namespace Wsmallnews\Preference\Models\Concerns\Preferenceable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Wsmallnews\Preference\Support\Utils as PreferenceUtils;
 use Wsmallnews\Member\Support\Utils as MemberUtils;
+use Wsmallnews\Preference\Support\Utils as PreferenceUtils;
 use Wsmallnews\User\Support\Utils as UserUtils;
 
 trait Followable
@@ -55,7 +55,6 @@ trait Followable
     {
         return $this->userFollowers()->count();
     }
-
 
     /**
      * 返回 $this 的粉丝列表（关注者）仅 MemberModel 类型

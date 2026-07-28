@@ -11,11 +11,11 @@ use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
 use InvalidArgumentException;
+use Wsmallnews\Member\Support\Utils as MemberUtils;
 use Wsmallnews\Preference\Models\Concerns\Preferenceable\Followable;
 use Wsmallnews\Preference\Models\Preference;
 use Wsmallnews\Preference\Support\Utils;
 use Wsmallnews\User\Support\Utils as UserUtils;
-use Wsmallnews\Member\Support\Utils as MemberUtils;
 
 trait Follower
 {
