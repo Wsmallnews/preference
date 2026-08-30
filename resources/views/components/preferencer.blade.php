@@ -4,6 +4,7 @@
     'contained' => false,
     'hasLink' => false,
     'embedded' => false,
+    'href' => null,
 ])
 
 @php
@@ -15,7 +16,14 @@
         throw new PreferenceException(get_class($preferencer) . ' model must implement `\Wsmallnews\Support\Contracts\HasSnIdentifiable` interface.');
     }
 
-    $rawHrefUrl = $preferencer->getSnHrefUrl();
+    // 跳转链接由调用方直传（string|\Closure），未传则不渲染链接（点击分发事件，由调用方监听跳转）
+    $rawHrefUrl = $href instanceof \Closure ? $href($preferencer) : $href;
+
+    // panel 语境下未传入链接时，兜底后台资源链接
+    if (blank($rawHrefUrl) && is_in_panel()) {
+        $rawHrefUrl = \Wsmallnews\Support\Helpers\FilamentModelHelper::getUrl($preferencer);
+    }
+
     $href = $rawHrefUrl ? (string) $rawHrefUrl : '';
     $tag = ($hasLink && $href !== '') ? 'a' : 'div';
 

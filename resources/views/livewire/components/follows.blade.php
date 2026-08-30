@@ -1,6 +1,9 @@
 @php
     use Filament\Support\Icons\Heroicon;
 
+    // 调用方传入的路由名（hrefRoute）→ 行项跳转链接闭包
+    $href = $hrefRoute ? fn ($record) => sn_route($hrefRoute, $record) : null;
+
     $heading = match ($listType) {
         'preferencer' => $this->getProperty('heading', __('sn-preference::preference.components.follows_title_user')),
         'preferenceable' => $this->getProperty('heading', __('sn-preference::preference.components.follows_title_subject')),
@@ -82,6 +85,7 @@
                                     :preference="$preference"
                                     :preferencer="$preference->preferencer"
                                     :has-link="$manageMode ? false : true"
+                                    :href="$href"
                                     :embedded="true"
                                 >
                                     @if ($hasMutual)
@@ -94,6 +98,7 @@
                                     :preference="$preference"
                                     :preferenceable="$preference->preferenceable"
                                     :has-link="$manageMode ? false : true"
+                                    :href="$href"
                                     :embedded="true"
                                 >
                                     @if ($hasMutual)
@@ -105,6 +110,7 @@
                                 <x-sn-preference::preference
                                     :preference="$preference"
                                     :has-link="$manageMode ? false : true"
+                                    :href="$href"
                                     :embedded="true"
                                 >
                                     @if ($hasMutual)

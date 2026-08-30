@@ -3,6 +3,7 @@
     'contained' => false,
     'hasLink' => false,
     'embedded' => false,
+    'href' => null,
 ])
 
 @php
@@ -21,9 +22,15 @@
         throw new PreferenceException(get_class($preferenceable) . ' model must implement `\Wsmallnews\Support\Contracts\HasSnSubject` interface.');
     }
 
-    $rawHrefUrl = $preferenceable
-        ? $preferenceable->getSnSubjectHrefUrl()
-        : ($preferencer ? $preferencer->getSnHrefUrl() : null);
+    // 跳转链接由调用方直传（string|\Closure）：闭包优先接收 preferenceable，缺失时接收 preferencer；
+    // 未传则不渲染链接（点击分发事件，由调用方监听跳转）
+    $rawHrefUrl = $href instanceof \Closure ? $href($preferenceable ?? $preferencer) : $href;
+
+    // panel 语境下未传入链接时，兜底后台资源链接
+    if (blank($rawHrefUrl) && is_in_panel() && filled($preferenceable ?? $preferencer)) {
+        $rawHrefUrl = \Wsmallnews\Support\Helpers\FilamentModelHelper::getUrl($preferenceable ?? $preferencer);
+    }
+
     $href = $rawHrefUrl ? (string) $rawHrefUrl : '';
     $tag = ($hasLink && $href !== '') ? 'a' : 'div';
 

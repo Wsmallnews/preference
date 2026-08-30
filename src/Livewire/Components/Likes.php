@@ -41,6 +41,12 @@ class Likes extends Base implements HasActions, HasSchemas
 
     public string $listType;
 
+    /**
+     * 行项跳转路由名（如 'sn-cms.posts.show'），传入后行项渲染为链接；
+     * 未传入时前端渲染为普通元素（点击分发事件），panel 语境兜底后台资源链接。
+     */
+    public ?string $hrefRoute = null;
+
     public function mount(): void
     {
         $this->hasAuthUser() || $this->authUser(Filament::auth()->user());

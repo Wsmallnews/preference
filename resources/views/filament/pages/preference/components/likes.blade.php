@@ -33,11 +33,11 @@
             >
                 @foreach ($likes as $preference)
                     @if ($listType == 'preferenceable')
-                        <x-sn-preference::preferencer :preference="$preference" :preferencer="$preference->preferencer" contained />
+                        <x-sn-preference::preferencer :preference="$preference" :preferencer="$preference->preferencer" :has-link="true" contained />
                     @elseif ($listType == 'preferencer')
-                        <x-sn-preference::preferenceable :preference="$preference" :preferenceable="$preference->preferenceable" contained />
+                        <x-sn-preference::preferenceable :preference="$preference" :preferenceable="$preference->preferenceable" :has-link="true" contained />
                     @else
-                        <x-sn-preference::preference :preference="$preference" contained />
+                        <x-sn-preference::preference :preference="$preference" :has-link="true" contained />
                     @endif
                 @endforeach
             </x-sn-support::paginators.container>
