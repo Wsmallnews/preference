@@ -1,1 +1,10 @@
 @source "../views/**/*";
+
+/* 窄容器（< 24rem，如侧栏小部件）时，列表行内的 Filament link 操作按钮
+ * 只保留图标、隐藏文字（同 filament-nestedset 树行按钮的降级模式）。
+ * 容器上下文由组件根的 @container（sn-preference-list）声明。 */
+@container (width < 24rem) {
+    .sn-preference-list .fi-ac-link-action > .fi-link-label {
+        @apply sr-only;
+    }
+}

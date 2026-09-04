@@ -15,11 +15,11 @@
         : __('sn-preference::preference.action.select_all');
 @endphp
 
-<div class="w-full">
+<div class="sn-preference-list w-full @container">
     <div @class(['w-full sn-container' => $contained])>
         {{-- Header --}}
         @if ($this->isManageable() && $manageMode)
-            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50/50 dark:bg-gray-800/50 dark:border-gray-700">
+            <div class="sn-list-header justify-between flex-wrap gap-x-3 gap-y-1 bg-gray-50/50 dark:bg-gray-800/50">
                 <button wire:click="toggleSelectAll"
                     class="sn-tip-text flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-300 sn-transition-colors">
                     <x-filament::icon icon="heroicon-m-list-bullet" class="size-4" />
@@ -32,7 +32,7 @@
                 </button>
             </div>
         @else
-            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+            <div class="sn-list-header justify-between flex-wrap gap-x-3 gap-y-1">
                 <h3 class="sn-h3-text">{{ $heading }}</h3>
                 <div class="flex items-center gap-3">
                     <span class="sn-tip-text flex items-center gap-1">
@@ -59,7 +59,7 @@
             >
                 @foreach ($likes as $preference)
                     <div @class([
-                        'sn-hover sn-link flex items-center gap-3 px-4 py-3 border-b border-gray-50 dark:border-gray-800/50 sn-transition-colors',
+                        'sn-hover sn-link sn-list-row flex items-center gap-3 sn-transition-colors',
                         'sn-active' => $manageMode && $this->isSelected($preference->id),
                     ])
                         @if ($manageMode)
@@ -111,7 +111,7 @@
 
             {{-- Batch action bar --}}
             @if ($manageMode)
-                <div class="sticky bottom-0 flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 dark:bg-gray-900 dark:border-gray-700 rounded-b-md">
+                <div class="sn-list-footer sticky bottom-0 justify-between rounded-b-(--sn-radius-card)">
                     <button wire:click="toggleSelectAll"
                         class="sn-tip-text flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-300 sn-transition-colors">
                         <x-filament::icon icon="heroicon-m-list-bullet" class="size-4" />

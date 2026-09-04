@@ -83,7 +83,7 @@
         @endisset
     </div>
 
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 shrink-0">
         @isset($meta)
             {{ $meta }}
         @else
