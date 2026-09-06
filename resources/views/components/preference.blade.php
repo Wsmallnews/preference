@@ -63,7 +63,7 @@
 >
     {{-- 上排: preferencer 操作者 --}}
     @if ($preferencer)
-        <div class="flex items-center gap-4 px-4 pt-4 pb-3">
+        <div class="flex items-center gap-4 sn-px sn-pt pb-3">
             <div class="w-8 h-8 rounded-full shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-800">
                 @if ($preferencer->getSnAvatarUrl())
                     <img class="w-full h-full object-cover" src="{{ files_url($preferencer->getSnAvatarUrl()) }}" alt="{{ $preferencer->getSnName() }}" />
@@ -131,7 +131,7 @@
 
     {{-- 下排: preferenceable 被操作对象 --}}
     @if ($preferenceable)
-        <div class="flex items-center gap-4 px-4 py-3">
+        <div class="flex items-center gap-4 sn-px py-3">
             <div class="w-9 h-9 shrink-0 overflow-hidden rounded-md bg-gray-100 dark:bg-gray-800">
                 @if ($preferenceable->getSnSubjectCoverUrl())
                     <img class="w-full h-full object-cover" src="{{ files_url($preferenceable->getSnSubjectCoverUrl()) }}" alt="{{ $preferenceable->getSnSubjectTitle() }}" />

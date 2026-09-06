@@ -4,8 +4,8 @@
 
 <div class="w-full">
     <div @class([
-        'sn-container px-4 py-8' => $contained,
-        'w-full flex flex-col gap-4',
+        'sn-container sn-padded' => $contained,
+        'w-full flex flex-col sn-gap',
     ])>
         <div class="flex items-center justify-between">
             <h3 class="sn-h3-text">
@@ -25,7 +25,7 @@
 
         @if ($views->isNotEmpty())
             <x-sn-support::paginators.container
-                class="w-full flex flex-col gap-4"
+                class="w-full flex flex-col sn-gap"
                 :page-type="$pageType"
                 :page-info="$pageInfo"
                 :paginator-link="$paginatorLink"

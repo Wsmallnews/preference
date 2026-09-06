@@ -21,7 +21,7 @@
     <div @class(['w-full sn-container' => $contained])>
         {{-- Header --}}
         @if ($this->isManageable() && $manageMode)
-            <div class="sn-list-header justify-between flex-wrap gap-x-3 gap-y-1 bg-gray-50/50 dark:bg-gray-800/50">
+            <div class="sn-list-header sn-list-header-muted">
                 <button wire:click="toggleSelectAll"
                     class="sn-tip-text flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-300 sn-transition-colors">
                     <x-filament::icon icon="heroicon-m-list-bullet" class="size-4" />
@@ -34,7 +34,7 @@
                 </button>
             </div>
         @else
-            <div class="sn-list-header justify-between flex-wrap gap-x-3 gap-y-1">
+            <div class="sn-list-header">
                 <h3 class="sn-h3-text">{{ $heading }}</h3>
                 <div class="flex items-center gap-3">
                     <span class="sn-tip-text flex items-center gap-1">
