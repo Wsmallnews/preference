@@ -145,7 +145,7 @@
                 </div>
             @endif
         @else
-            <x-sn-support::empty-state
+            <x-sn-support::empty
                 :contained="false"
                 icon="heroicon-m-user-group"
                 icon-color="gray"
